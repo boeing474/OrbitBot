@@ -13,12 +13,10 @@ cd hackathon-42rio-bot
 
 2. Instalar as dependências
 Isso vai baixar as bibliotecas necessárias (discord.js, whatsapp-web, etc).
-COMANDO: **(Bash) npm install**Snippet de código
-Dica pra quem tá na 42: Façam isso dentro da pasta /goinfre para não estourar o espaço da home.
+npm install
 
-3. Configurar as Chaves
+3. Configurar as Chaves (MUITO IMPORTANTE)
 As senhas não ficam no código (por segurança). Você precisa criar um arquivo chamado .env na raiz da pasta (onde fica o package.json) e colar isso aqui dentro:
-
 # Token do Bot (Pega lá no Discord Developer Portal)
 DISCORD_TOKEN=COLE_SEU_TOKEN_AQUI
 
@@ -26,23 +24,25 @@ DISCORD_TOKEN=COLE_SEU_TOKEN_AQUI
 # (Se não souber, deixa vazio, roda o bot e usa o comando !id no grupo pra descobrir)
 WHATSAPP_GROUP_ID=120363XXXXXXXX@g.us
 
-#  Chave da OpenAI
+# (Opcional) Chave da OpenAI se quiser resumo com IA
 OPENAI_KEY=sk-XXXXXXXXXX
 
-4. Botar pra rodarBashnode index.js
-Vai aparecer um QR Code gigante no terminal.Abre o WhatsApp no celular > Aparelhos Conectados > Conectar.Escaneia o código.
-Espera aparecer: ✅ WhatsApp conectado!.
+4. Botar pra rodar
+node index.js
 
-🎮 Comandos:
+## 🎮 Tabela de Comandos
 
-Comando:!id (No Whatsapp)
--Bot responde com o ID do chat atual (útil pra preencher o .env)
-Comando:!dispararNews (No Discord)
--Pega as notícias acumuladas e manda pro Zap
-Comando: !limparNews
--Limpa a memória se você salvou algo errado.
+| Comando | Onde digitar? | O que ele faz? |
+| :--- | :--- | :--- |
+| **`!id`** | WhatsApp | Mostra o ID do chat atual (útil para configurar o `.env`). |
+| **`!dispararNews`** | Discord | Pega as mensagens salvas e envia a Newsletter agora. |
+| **`!limparNews`** | Discord | Apaga a memória de notícias do dia (reset). |
 
 🆘 Deu ruim?
-O bot conectou mas não manda mensagem:Apague a pasta wpp_auth (que foi criada sozinha na pasta do projeto) e rode de novo. Isso reseta a conexão do WhatsApp.
-Erro de espaço (ENOSPC):O disco tá cheio. Apaga a pasta node_modules e tenta instalar de novo no /goinfre.
-O bot não lê as mensagens:Confere se você ativou o "Message Content Intent" lá no site do Discord Developer (na aba Bot). Sem isso ele fica surdo.
+O bot conectou mas não manda mensagem: Apague a pasta wpp_auth (que foi criada sozinha na pasta do projeto) e rode de novo. Isso reseta a conexão do WhatsApp.
+
+Erro de espaço (ENOSPC): O disco tá cheio. Apaga a pasta node_modules e tenta instalar de novo no /goinfre.
+
+O bot não lê as mensagens: Confere se você ativou o "Message Content Intent" lá no site do Discord Developer (na aba Bot). Sem isso ele fica surdo.
+
+
