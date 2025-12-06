@@ -1,0 +1,5 @@
+node_modules/
+wpp_auth/
+.env
+banco_noticias.json
+.DS_Store
