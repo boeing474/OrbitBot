@@ -39,3 +39,10 @@ Um bot **Middleware** que atua como uma ponte silenciosa:
    ```bash
    git clone [https://github.com/boeing474/OrbitBot.git](https://github.com/boeing474/OrbitBot.git)
    cd OrbitBot
+2. Instalar Dependências
+   ```npm install```
+3. Configurar Variáveis de Ambiente
+   Crie um arquivo chamado .env na raiz do projeto e preencha conforme o modelo
+# Seu Token do Bot do Discord
+DISCORD_TOKEN=seu_token_aqui_sem_aspas
+
