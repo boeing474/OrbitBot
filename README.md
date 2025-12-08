@@ -43,7 +43,8 @@ Um bot **Middleware** que atua como uma ponte silenciosa:
    ```npm install```
 3. Configurar Variáveis de Ambiente
    Crie um arquivo chamado .env na raiz do projeto e preencha conforme o modelo
-   Seu Token do Bot do Discord - DISCORD_TOKEN='seu_token_aqui_sem_aspas'
-4. Executar
+   Seu Token do Bot do Discord e id da conversa do Whatsapp - DISCORD_TOKEN='seu_token_aqui_sem_aspas'
+WHATSAPP_GROUP_ID='seu_id_aqui_sem_aspas'
+5. Executar
    ```npm index.js```
    Ao rodar pela primeira vez, um QR Code aparecerá no terminal. Escaneie com seu WhatsApp (Dispositivos Conectados) para autenticar.
