@@ -1,112 +1,93 @@
-require('dotenv').config(); // Carrega as chaves do arquivo .env
+require('dotenv').config();
 
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { Client: ClientWA, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const fs = require('fs');
 
 // --- CONFIGURAÇÃO ---
-// ⚠️ SUBSTITUA PELOS SEUS DADOS:
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const WHATSAPP_GROUP_ID = '120363422815325357@g.us'; // Digitar em algum chat !id e ele vai ver o id do grupo/chat
-const ID_CARGO_STAFF = '123456789'; // ID do cargo Staff
-const ID_CARGO_CADETES = '987654321'; // ID do cargo Cadetes (opcional se usar string)
 
-// Memória simples
-let noticiasDoDia = [];
+// ID do Fórum do Discord (Avisos)
+const ID_FORUM_AVISOS = '1447356416045355161'; 
 
-// --- 1. CLIENTE DISCORD ---
+// ID do Grupo do WhatsApp (Grupo do Hacka)
+const WHATSAPP_GROUP_ID = '120363404505774970@g.us'; 
+
+
 const discordClient = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
     ]
 });
 
-// --- 2. CLIENTE WHATSAPP ---
+
 const whatsappClient = new ClientWA({
-    authStrategy: new LocalAuth({ dataPath: './wpp_auth' }), // Salva login na pasta local
+    authStrategy: new LocalAuth({ dataPath: './wpp_auth' }), 
     puppeteer: {
-        headless: true, // Roda sem abrir janela do Chrome
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Importante para Linux/Ambiente 42
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
 
-// --- LÓGICA WHATSAPP ---
+
+
 whatsappClient.on('qr', (qr) => {
-    console.log('📱 SCANEIE O QR CODE ABAIXO:');
+    console.log('📱 SCANEIE O QR CODE ABAIXO SE NECESSÁRIO:');
     qrcode.generate(qr, { small: true });
 });
 
 whatsappClient.on('ready', () => {
-    console.log('✅ WhatsApp conectado!');
+    console.log('✅ WhatsApp conectado e pronto para enviar alertas!');
 });
 
-// Comando para descobrir ID do grupo
-whatsappClient.on('message_create', async msg => {
-    console.log(`👂 Ouvi: "${msg.body}"`); // <--- ISSO VAI TE CONTAR O QUE ESTÁ CHEGANDO)
-    if(msg.body.trim() === '!id') {
-        const chat = await msg.getChat();
-        console.log(`🆔 ID DO CHAT: ${chat.id._serialized}`);
-        msg.reply(`ID: ${chat.id._serialized}`);
-    }
-});
 
 whatsappClient.initialize();
 
-// --- LÓGICA DISCORD ---
-discordClient.on('ready', () => {
-    console.log(`✅ Discord conectado como ${discordClient.user.tag}`);
+
+discordClient.once(Events.ClientReady, c => {
+    console.log(`✅ Discord conectado como ${c.user.tag}`);
+    console.log(`👀 Monitorando o fórum: ${ID_FORUM_AVISOS}`);
 });
 
-discordClient.on('messageCreate', message => {
-    if (message.author.bot) return;
+discordClient.on(Events.ThreadCreate, async (thread) => {
+    if (thread.parentId !== ID_FORUM_AVISOS) return;
 
-    // Critérios de filtro
-    const mencionouCadetes = message.content.includes('@cadetes'); // Jeito simples
-    // Se quiser por cargo, descomente a linha abaixo e configure o ID lá em cima
-    // const temCargoStaff = message.member.roles.cache.has(ID_CARGO_STAFF);
-
-    if (mencionouCadetes) { // Adicione '|| temCargoStaff' aqui se quiser
-        const noticia = {
-            autor: message.author.username,
-            msg: message.content,
-            canal: message.channel.name,
-            link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-            hora: new Date().toLocaleTimeString('pt-BR')
-        };
-        
-        noticiasDoDia.push(noticia);
-        console.log(`📌 Notícia capturada de ${noticia.autor}`);
-        message.react('✅'); // Feedback visual no Discord
-    }
-
-    // Comando para disparar
-    if (message.content === '!dispararNews') {
-        enviarNewsletter();
-    }
-});
-
-// --- FUNÇÃO DE ENVIO ---
-async function enviarNewsletter() {
-    if (noticiasDoDia.length === 0) return console.log('Nada para enviar.');
-
-    let texto = `*📢 PLANTÃO 42 RIO - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;
-
-    noticiasDoDia.forEach((n, i) => {
-        texto += `*${i+1}. ${n.autor}* em #${n.canal} [${n.hora}]\n`;
-        texto += `_${n.msg}_\n`;
-        texto += `🔗 ${n.link}\n\n`;
-    });
+    console.log(`\n🔎 [PASSO 1] Novo post detectado: "${thread.name}"`);
 
     try {
-        await whatsappClient.sendMessage(WHATSAPP_GROUP_ID, texto);
-        console.log('🚀 Enviado para o WhatsApp!');
-        noticiasDoDia = []; // Limpa a lista
-    } catch (e) {
-        console.error('Erro no envio:', e);
+        console.log('⏳ [PASSO 2] Esperando 2 segundos para o Discord processar...');
+        await new Promise(r => setTimeout(r, 2000)); 
+
+        console.log('⏳ [PASSO 3] Tentando pegar o conteúdo da mensagem...');
+        const starterMsg = await thread.fetchStarterMessage().catch(err => {
+            console.error('⚠️ Erro ao pegar mensagem (mas vou continuar):', err.message);
+            return null;
+        });
+
+        const autor = starterMsg ? starterMsg.author.username : "Desconhecido";
+        const conteudo = starterMsg ? starterMsg.content : "(Sem conteúdo)";
+        const link = `https://discord.com/channels/${thread.guildId}/${thread.id}`;
+        
+        console.log(`✅ [PASSO 4] Dados pegos! Autor: ${autor} | Conteúdo: ${conteudo}`);
+
+        const textoZap = 
+            `🚨 *NOVO AVISO NO DISCORD* 🚨\n\n` +
+            `📌 *Título:* ${thread.name}\n` +
+            `👤 *Autor:* ${autor}\n\n` +
+            `📝 *Mensagem:*\n_${conteudo}_\n\n` +
+            `🔗 *Link:* ${link}`;
+
+        console.log('📤 [PASSO 5] Enviando para o WhatsApp...');
+        
+        await whatsappClient.sendMessage(WHATSAPP_GROUP_ID, textoZap);
+        
+        console.log(`🚀 [SUCESSO] Alerta enviado para o grupo!\n`);
+
+    } catch (err) {
+        console.error('❌ [ERRO CRÍTICO]:', err);
     }
-}
+});
 
 discordClient.login(DISCORD_TOKEN);

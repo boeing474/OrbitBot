@@ -1,5 +1,5 @@
-node_modules/
-wpp_auth/
+node_modules
 .env
-banco_noticias.json
-.DS_Store
+.wwebjs_auth
+.wwebjs_cache
+wpp_auth
