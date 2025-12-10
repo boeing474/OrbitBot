@@ -33,7 +33,24 @@ Um bot **Middleware** que atua como uma ponte silenciosa:
 * Conta no Discord (com permissão de criar Bots)
 * Celular com WhatsApp conectado
 
-### Passo a Passo
+## 🤖 Configurando o bot do Discord
+
+1. Acesse o Discord para Desenvolvedores:
+   ```https://discord.com/developers/applications```
+2. Clique em **"New Application"** e dê um nome
+3. No menu lateral, vá em **Bot**:
+   * Clique em "Reset Token" e **copie o Token** (você precisará dele no Passo 3).
+   * ⚠️ **IMPORTANTE:** Role para baixo até a seção **Privileged Gateway Intents**.
+   * Ative a opção: **MESSAGE CONTENT INTENT** (Isso permite que o bot leia o que foi escrito).
+   * Salve as alterações.
+4. No menu lateral, vá em **OAuth2** -> **URL Generator**:
+   * Em *Scopes*, marque: `bot`.
+   * Em *Bot Permissions*, marque: `View Channels`, `Read Messages/View History`.
+   * Copie o link gerado no final da página, cole no navegador e adicione o bot ao seu servidor.
+
+---
+
+## Passo a Passo
 
 1. **Clone o repositório**
    ```bash
@@ -42,9 +59,20 @@ Um bot **Middleware** que atua como uma ponte silenciosa:
 2. Instalar Dependências
    ```npm install```
 3. Configurar Variáveis de Ambiente
-   Crie um arquivo chamado .env na raiz do projeto e preencha conforme o modelo
-   Seu Token do Bot do Discord e id da conversa do Whatsapp - DISCORD_TOKEN='seu_token_aqui_sem_aspas'
-WHATSAPP_GROUP_ID='seu_id_aqui_sem_aspas'
+   Crie um arquivo chamado *.env* na raiz do projeto e preencha do seguinte jeito
+
+   •Token do seu Bot do Discord:
+   *DISCORD_TOKEN='seu_token_aqui_sem_aspas'*
+
+   •ID do Canal/Forum do Discord que será monitorado:
+   
+   `(Ative o Modo Desenvolvedor no Discord -> Clique direito no canal -> Copiar ID)`
+   *DISCORD_FORUM_ID='SEU_ID_sem_aspas'*
+
+   •ID do Grupo do WhatsApp para onde as mensagens vão:
+   
+   *WHATSAPP_GROUP_ID='010101010228@g.usdontp_sem_aspas'*
+
 5. Executar
    ```node index.js```
    Ao rodar pela primeira vez, um QR Code aparecerá no terminal. Escaneie com seu WhatsApp (Dispositivos Conectados) para autenticar.
