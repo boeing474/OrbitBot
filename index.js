@@ -8,10 +8,10 @@ const qrcode = require('qrcode-terminal');
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
 // ID do Fórum do Discord (Avisos)
-const ID_FORUM_AVISOS = '1447356416045355161'; 
+const ID_FORUM_AVISOS = 'ID_DO_DISCORD'; 
 
 // ID do Grupo do WhatsApp (Grupo do Hacka)
-const WHATSAPP_GROUP_ID = '120363404505774970@g.us'; 
+const WHATSAPP_GROUP_ID = 'ID_DO_SEU_GRUPO'; 
 
 
 const discordClient = new Client({
